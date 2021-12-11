@@ -6,7 +6,7 @@ integration with pycharm https://www.jetbrains.com/help/pycharm/pipenv.html
   pipenv install
 ```
 
-### Create .env vile
+### Create .env file
 ```
 cd src
 cp .env.template .env
