@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 import dj_database_url
 from environs import Env
+
 from version import __version__
 
 env = Env()
@@ -12,6 +13,8 @@ SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+
+ASGI_APPLICATION = "asgi.application"
 
 BASE_APPS = [
     "django.contrib.admin",
@@ -71,11 +74,7 @@ DATABASES = {
     )
 }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -108,9 +107,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_AUTHENTICATION_CLASSES": [],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
@@ -169,15 +166,12 @@ DBBACKUP_STORAGE_OPTIONS = {
 }
 DBBACKUP_CLEANUP_KEEP = 7
 DBBACKUP_FILENAME_TEMPLATE = (
-    env.str("DBBACKUP_PROJECT_NAME", "dcrf-chat")
-    + "-{datetime}.{extension}"
+    env.str("DBBACKUP_PROJECT_NAME", "dcrf-chat") + "-{datetime}.{extension}"
 )
 
 SPECTACULAR_SETTINGS: Dict[str, Any] = {
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
-    "SERVE_AUTHENTICATION": [
-        "rest_framework.authentication.SessionAuthentication"
-    ],
+    "SERVE_AUTHENTICATION": ["rest_framework.authentication.SessionAuthentication"],
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular_extensions.postprocessing_hooks.add_servers",
     ],
