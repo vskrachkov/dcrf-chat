@@ -28,7 +28,7 @@ EXTERNAL_APPS = [
     "drf_health_check",
 ]
 
-PROJECT_APPS: List[str] = ["chat"]
+PROJECT_APPS: List[str] = ["chat", "dcrf_docs"]
 
 INSTALLED_APPS = BASE_APPS + EXTERNAL_APPS + PROJECT_APPS
 

@@ -10,8 +10,9 @@ from djangochannelsrestframework.observer.generics import (
 )
 from djangochannelsrestframework.permissions import IsAuthenticated
 
+from dcrf_docs.action_docs import ActionDocs
 from .models import Room, Message, User
-from .serializers import MessageSerializer, RoomSerializer, UserSerializer
+from .serializers import MessageSerializer, RoomSerializer, UserSerializer, JoinRoomActionSerializer
 
 
 class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
@@ -27,7 +28,7 @@ class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
             await self.notify_users()
         await super().disconnect(code)
 
-    @action()
+    @action(docs=ActionDocs(serializer=JoinRoomActionSerializer()))
     async def join_room(self, pk, **kwargs):
         self.room_subscribe = pk
         await self.add_user_to_room(pk)

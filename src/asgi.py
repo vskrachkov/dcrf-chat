@@ -26,4 +26,4 @@ application = ProtocolTypeRouter(
 )
 
 if __name__ == "__main__":
-    uvicorn.run(application)
+    uvicorn.run(application, access_log=False)

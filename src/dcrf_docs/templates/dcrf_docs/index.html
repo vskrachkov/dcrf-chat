@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ schema.info.title }}</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@asyncapi/react-component@1.0.0-next.21/styles/default.min.css"
+      integriry="sha384-JD4WiisNFV+VyC+uSfnk/c4cpj/cbbFsHTp10LWs5DamvZfOzcV1xaaURK7SAknk"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    >
+    <script
+      src="https://unpkg.com/@asyncapi/react-component@1.0.0-next.21/browser/standalone/index.js"
+      integriry="sha384-MfJHIcfQj/tW4U1JEGkFy68RQ9ABfqmLMESCyzT//4XzGTO/tdAvqEyB5qz98spD"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div id="asyncapi"></div>
+    {{ schema|json_script:"schema" }}
+
+    <script>
+      const schema = JSON.parse(document.getElementById("schema").textContent);
+      AsyncApiStandalone.hydrate({
+        schema,
+        config: {
+          show: {
+            sidebar: true,
+          }
+        },
+      }, document.getElementById('asyncapi'));
+    </script>
+
+  </body>
+</html>

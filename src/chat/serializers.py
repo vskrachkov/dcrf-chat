@@ -3,6 +3,11 @@ from rest_framework import serializers
 from .models import User, Room, Message
 
 
+class JoinRoomActionSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["join_room"])
+    pk = serializers.IntegerField()
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
