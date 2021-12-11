@@ -1,0 +1,8 @@
+{% block content %}
+    What chat room would you like to enter?<br>
+    <form method="POST" action={% url 'chat:index' %}>
+    {%  csrf_token %}
+        <label for="room-name-input">Room name</label><input id="room-name-input" name="name" type="text" size="100"><br>
+        <input id="room-name-submit" type="submit" value="Enter">
+    </form>
+{% endblock content %}

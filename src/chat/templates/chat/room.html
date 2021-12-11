@@ -1,0 +1,80 @@
+{% load static %}
+
+{% block content %}
+    <form id="form">
+        <label for="chat-log">Messages log</label><textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
+        <label for="chat-message-input">Type your message here</label><input id="chat-message-input" type="text" size="100"><br>
+        <input id="chat-message-submit" type="submit" value="Send">
+    </form>
+{% endblock content %}
+
+{% block footer %}
+    <script>
+        const room_pk = "{{ room.pk }}";
+        const request_id = "{{ request.sessions.session_key }}";
+
+        const ws = new WebSocket(`ws://${window.location.host}/ws/chat/room/`);
+
+        ws.onopen = function(){
+            ws.send(
+                JSON.stringify({
+                    pk:room_pk,
+                    action:"join_room",
+                    request_id:request_id,
+                })
+            );
+                            ws.send(
+                JSON.stringify({
+                    pk:room_pk,
+                    action:"retrieve",
+                    request_id:request_id,
+                })
+            );
+                            ws.send(
+                JSON.stringify({
+                    pk:room_pk,
+                    action:"subscribe_to_messages_in_room",
+                    request_id:request_id,
+                })
+            );
+                            ws.send(
+                JSON.stringify({
+                    pk:room_pk,
+                    action:"subscribe_instance",
+                    request_id:request_id,
+                })
+            );
+        };
+
+        ws.onmessage = function (e) {
+            const message = JSON.parse(e.data);
+            switch (message.action) {
+                case "retrieve":
+                    console.log(`retrieve: ${JSON.stringify(message.data)} ${message.errors}`)
+                    break;
+                case "create":
+                    console.log(`create: ${JSON.stringify(message.data)} ${message.errors}`)
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        ws.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        const form = document.getElementById('form');
+        form.addEventListener('submit', (event) => {
+            const message = document.getElementById("chat-message-input").value;
+            console.log(`Form Submitted: ${message}; Time stamp: ${event.timeStamp}`);
+            ws.send(JSON.stringify({
+                'action': "create_message",
+                'request_id': new Date().getTime(),
+                'message': message
+            }));
+            event.preventDefault();
+        });
+
+</script>
+{% endblock footer %}

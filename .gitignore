@@ -1,0 +1,9 @@
+.idea
+.vscode
+*.pyc
+venv/
+.env
+__pycache__
+.mypy_cache
+*.sqlite*
+.DS_Store

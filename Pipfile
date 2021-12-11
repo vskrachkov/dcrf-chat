@@ -1,0 +1,39 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+djangorestframework = "*"
+environs = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+Django = "3.2"
+django-storages = "*"
+boto3 = "*"
+django-dbbackup = "*"
+sentry_sdk="*"
+drf-spectacular = "*"
+django-json-logging = "*"
+django-cors-headers = "*"
+drf-health-check = "*"
+cryptography = "*"
+uvicorn = "*"
+drf_spectacular_extensions = "*"
+drf_info_endpoint = "*"
+djangochannelsrestframework = "*"
+websockets = "*"
+
+[dev-packages]
+mypy = "==0.910"
+django-stubs = "*"
+djangorestframework-stubs = "*"
+tblib = "*"
+isort = "5.10.1"
+black = "==21.12b0"
+pre-commit = "*"
+bumpversion = "*"
+coverage = "*"
+
+[requires]
+python_version = "3.9"

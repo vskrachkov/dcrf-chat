@@ -1,0 +1,11 @@
+Jenkinsfile
+Dockerfile
+.gitignore
+.pre-commit-config.yaml
+mypy.ini
+pyproject.toml
+kubernetes.yml
+secrets.yml.example
+**/*.env
+.dockerignore
+.git
