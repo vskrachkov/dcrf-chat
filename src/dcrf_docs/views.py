@@ -1,16 +1,16 @@
 import dataclasses
 import logging
-from typing import Type, Dict, Callable, Union
+from typing import Any, Type, Union
 
 from asgiref.typing import ASGI2Protocol
-from channels.consumer import AsyncConsumer
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channelsmultiplexer import AsyncJsonWebsocketDemultiplexer
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.module_loading import import_string
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
+from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema
 
 from dcrf_docs import asyncapi
@@ -29,9 +29,7 @@ def cleanup_none(d: dict) -> dict:
     return res
 
 
-def introspect_consumer(
-    consumer: Type[GenericAsyncAPIConsumer],
-) -> asyncapi.Channels:
+def introspect_consumer(consumer: Any) -> asyncapi.Channels:
     res: asyncapi.Channels = {}
 
     if hasattr(consumer, "consumer_class"):
@@ -92,22 +90,24 @@ def handle__URLRouter(app: URLRouter) -> asyncapi.Channels:
     return res
 
 
-ASGIIntrospectionHandler = Callable[[ASGI2Protocol], asyncapi.Channels]
-
-
-def introspect_application(app: Union[ASGI2Protocol, Type[GenericAsyncAPIConsumer], Type[AsyncJsonWebsocketConsumer]]) -> asyncapi.Channels:
-    handlers: Dict[ASGI2Protocol, ASGIIntrospectionHandler] = {
-        ProtocolTypeRouter: handle__ProtocolTypeRouter,
-        URLRouter: handle__URLRouter,
-    }
-    if handler := handlers.get(type(app), None):
-        return handler(app)
+def introspect_application(
+    app: Union[
+        ProtocolTypeRouter,
+        URLRouter,
+        Type[GenericAsyncAPIConsumer],
+        Type[AsyncJsonWebsocketConsumer],
+    ]
+) -> asyncapi.Channels:
+    if isinstance(app, ProtocolTypeRouter):
+        return handle__ProtocolTypeRouter(app)
+    if isinstance(app, URLRouter):
+        return handle__URLRouter(app)
     if issubclass(app, (GenericAsyncAPIConsumer, AsyncJsonWebsocketConsumer)):
         return introspect_consumer(app)
     return {}
 
 
-def async_docs(request):
+def async_docs(request: Request) -> HttpResponse:
     info = asyncapi.Info(title="Hello world application", version="1.1.2")
     asgi_app = import_string(settings.ASGI_APPLICATION)
     channels: asyncapi.Channels = introspect_application(asgi_app)

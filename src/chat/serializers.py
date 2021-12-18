@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, Room, Message
+from .models import Message, Room, User
 
 
 class JoinRoomActionSerializer(serializers.Serializer):
@@ -20,7 +20,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        exclude = []
+        fields = "__all__"
         depth = 1
 
     @staticmethod

@@ -1,10 +1,14 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, reverse, get_object_or_404
+from typing import Any
+
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from rest_framework.request import Request
+from rest_framework.reverse import reverse
 
 from .models import Room
 
 
-def index(request):
+def index(request: Request) -> HttpResponse:
     if request.method == "POST":
         name = request.POST.get("name", None)
         if name:
@@ -13,7 +17,7 @@ def index(request):
     return render(request, "chat/index.html")
 
 
-def room(request, pk):
+def room(request: Request, pk: Any) -> HttpResponse:
     room: Room = get_object_or_404(Room, pk=pk)
     return render(
         request,

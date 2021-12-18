@@ -4,15 +4,14 @@ import django
 import uvicorn
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channelsmultiplexer import AsyncJsonWebsocketDemultiplexer
 from django.core.asgi import get_asgi_application
 from django.urls import path
-from channelsmultiplexer import AsyncJsonWebsocketDemultiplexer
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
 from chat import consumers
-
 
 # application = ProtocolTypeRouter(
 #     {
