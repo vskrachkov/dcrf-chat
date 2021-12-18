@@ -37,3 +37,13 @@ class AsyncAPISchema:
     asyncapi: Literal["2.2.0"]
     info: "Info"
     channels: "Channels"
+
+
+def cleanup_none(d: dict) -> dict:
+    res = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            res[k] = cleanup_none(v)
+        elif v is not None:
+            res[k] = v
+    return res
