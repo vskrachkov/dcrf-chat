@@ -31,13 +31,12 @@ def introspect_consumer(consumer: Any) -> asyncapi.Channels:
             if docs:
                 if not isinstance(docs, ActionDocs):
                     log.warning("docs must be an instance of ActionDocs")
-                serializer = docs.serializer
-                name = serializer.__class__.__name__ if serializer else ""
-                payload = AutoSchema().map_serializer(serializer) if serializer else {}
+                name = docs.sub.__class__.__name__.replace("Serializer", "")
+                payload = AutoSchema().map_serializer(docs.sub)
                 res[
                     asyncapi.ChannelName(docs.name or action_name)
                 ] = asyncapi.ChannelItemObject(
-                    description=docs.description or "",
+                    description=docs.description,
                     subscribe=asyncapi.OperationObject(
                         message=asyncapi.MessageObject(name=name, payload=payload)
                     ),

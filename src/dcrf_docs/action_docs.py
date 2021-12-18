@@ -1,11 +1,12 @@
 import dataclasses
-from typing import Optional
+from typing import Iterable, Optional
 
 from rest_framework.serializers import Serializer
 
 
 @dataclasses.dataclass
 class ActionDocs:
-    serializer: Serializer
+    sub: Serializer
+    pub: Optional[Iterable[Serializer]] = None
     name: Optional[str] = None
-    description: Optional[str] = None
+    description: str = ""

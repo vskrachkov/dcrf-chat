@@ -1,4 +1,3 @@
-import json
 from typing import Any, Iterable, Optional
 
 from channels.db import database_sync_to_async
@@ -34,24 +33,24 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
             await self.notify_users()
         await super().disconnect(code)
 
-    @generics.action(docs=ActionDocs(serializer=JoinRoomActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(sub=JoinRoomActionSerializer()))  # type: ignore
     async def join_room(self, pk: Any, **kwargs: Any) -> None:
         self.room_subscribe = pk
         await self.add_user_to_room(pk)
         await self.notify_users()
 
-    @generics.action(docs=ActionDocs(serializer=LeaveRoomActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(sub=LeaveRoomActionSerializer()))  # type: ignore
     async def leave_room(self, pk: Any, **kwargs: Any) -> None:
         await self.remove_user_from_room(pk)
 
-    @generics.action(docs=ActionDocs(serializer=CreateMessageActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(sub=CreateMessageActionSerializer()))  # type: ignore
     async def create_message(self, message: str, **kwargs: Any) -> None:
         room: Room = await self.get_room(pk=self.room_subscribe)
         await database_sync_to_async(Message.objects.create)(
             room=room, user=self.scope["user"], text=message
         )
 
-    @generics.action(docs=ActionDocs(serializer=SubscribeToMessageInRoomSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(sub=SubscribeToMessageInRoomSerializer()))  # type: ignore
     async def subscribe_to_messages_in_room(self, pk: Any, **kwargs: Any) -> None:
         await self.message_activity.subscribe(room=pk)  # type: ignore
 
@@ -70,7 +69,9 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
             yield f"room__{room}"
 
     @message_activity.serializer  # type: ignore
-    def message_activiy(self, instance: Message, action: Action, **kwargs: Any) -> dict:
+    def message_activity(
+        self, instance: Message, action: Action, **kwargs: Any
+    ) -> dict:
         return dict(
             data=MessageSerializer(instance).data, action=action.value, pk=instance.pk
         )
@@ -80,11 +81,11 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
         for group in self.groups:
             await self.channel_layer.group_send(
                 group,
-                {"type": "update_users", "usuarios": await self.current_users(room)},
+                {"type": "update_users", "users": await self.current_users(room)},
             )
 
     async def update_users(self, event: dict) -> None:
-        await self.send(text_data=json.dumps({"usuarios": event["usuarios"]}))
+        await self.send_json({"users": event["users"]})
 
     @staticmethod
     @database_sync_to_async  # type: ignore
