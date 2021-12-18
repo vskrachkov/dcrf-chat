@@ -3,11 +3,6 @@ from rest_framework import serializers
 from .models import Message, Room, User
 
 
-class JoinRoomActionSerializer(serializers.Serializer):
-    action = serializers.ChoiceField(choices=["join_room"])
-    pk = serializers.IntegerField()
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -41,3 +36,27 @@ class RoomSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_last_message(obj: Room) -> dict:
         return MessageSerializer(obj.messages.order_by("created_at").last()).data
+
+
+class JoinRoomActionSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["join_room"])
+    request_id = serializers.IntegerField()
+    pk = serializers.IntegerField()
+
+
+class LeaveRoomActionSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["leave_room"])
+    request_id = serializers.IntegerField()
+    pk = serializers.IntegerField()
+
+
+class SubscribeToMessageInRoomSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["subscribe_to_messages_in_room"])
+    request_id = serializers.IntegerField()
+    pk = serializers.IntegerField()
+
+
+class CreateMessageActionSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["create_message"])
+    request_id = serializers.IntegerField()
+    message = serializers.CharField()

@@ -11,9 +11,12 @@ from dcrf_docs.action_docs import ActionDocs
 
 from .models import Message, Room, User
 from .serializers import (
+    CreateMessageActionSerializer,
     JoinRoomActionSerializer,
+    LeaveRoomActionSerializer,
     MessageSerializer,
     RoomSerializer,
+    SubscribeToMessageInRoomSerializer,
     UserSerializer,
 )
 
@@ -37,18 +40,18 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
         await self.add_user_to_room(pk)
         await self.notify_users()
 
-    @generics.action()  # type: ignore
+    @generics.action(docs=ActionDocs(serializer=LeaveRoomActionSerializer()))  # type: ignore
     async def leave_room(self, pk: Any, **kwargs: Any) -> None:
         await self.remove_user_from_room(pk)
 
-    @generics.action()  # type: ignore
-    async def create_message(self, message: Message, **kwargs: Any) -> None:
+    @generics.action(docs=ActionDocs(serializer=CreateMessageActionSerializer()))  # type: ignore
+    async def create_message(self, message: str, **kwargs: Any) -> None:
         room: Room = await self.get_room(pk=self.room_subscribe)
         await database_sync_to_async(Message.objects.create)(
             room=room, user=self.scope["user"], text=message
         )
 
-    @generics.action()  # type: ignore
+    @generics.action(docs=ActionDocs(serializer=SubscribeToMessageInRoomSerializer()))  # type: ignore
     async def subscribe_to_messages_in_room(self, pk: Any, **kwargs: Any) -> None:
         await self.message_activity.subscribe(room=pk)  # type: ignore
 
