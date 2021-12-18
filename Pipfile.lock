@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3c39f065d6995aa434e6b5b4b7401f4401000a9d1d3370090d6895ad9f7e599c"
+            "sha256": "28932833570cf85d3790b1d3579a4eca1bcb93a35495e4605125d5d954134223"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -131,6 +131,13 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.0.4"
+        },
+        "channelsmultiplexer": {
+            "hashes": [
+                "sha256:98e674110f07b1d41940a32d0a921156d17bf9176a65f19f71f703e3bb38f50e"
+            ],
+            "index": "pypi",
+            "version": "==0.0.3"
         },
         "click": {
             "hashes": [

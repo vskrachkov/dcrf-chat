@@ -23,6 +23,7 @@ drf_spectacular_extensions = "*"
 drf_info_endpoint = "*"
 djangochannelsrestframework = "*"
 websockets = "*"
+channelsmultiplexer = "*"
 
 [dev-packages]
 mypy = "==0.910"

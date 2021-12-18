@@ -19,7 +19,7 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("info/", info),
-    path("async_docs/", async_docs),
+    path("async_api_docs/", async_docs),
     path("health/", include("drf_health_check.urls")),
     path("", include("chat.urls", namespace="chat")),
 ]
