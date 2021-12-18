@@ -6,7 +6,6 @@ from rest_framework.serializers import Serializer
 
 @dataclasses.dataclass
 class ActionDocs:
-    sub: Serializer
-    pub: Optional[Iterable[Serializer]] = None
-    name: Optional[str] = None
+    publish: Serializer
+    subscribe: Optional[Iterable[Serializer]] = None
     description: str = ""

@@ -14,6 +14,7 @@ from .serializers import (
     JoinRoomActionSerializer,
     LeaveRoomActionSerializer,
     MessageSerializer,
+    NotifyUsersSerializer,
     RoomSerializer,
     SubscribeToMessageInRoomSerializer,
     UserSerializer,
@@ -33,24 +34,24 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
             await self.notify_users()
         await super().disconnect(code)
 
-    @generics.action(docs=ActionDocs(sub=JoinRoomActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(publish=JoinRoomActionSerializer(), subscribe=[NotifyUsersSerializer()]))  # type: ignore
     async def join_room(self, pk: Any, **kwargs: Any) -> None:
         self.room_subscribe = pk
         await self.add_user_to_room(pk)
         await self.notify_users()
 
-    @generics.action(docs=ActionDocs(sub=LeaveRoomActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(publish=LeaveRoomActionSerializer()))  # type: ignore
     async def leave_room(self, pk: Any, **kwargs: Any) -> None:
         await self.remove_user_from_room(pk)
 
-    @generics.action(docs=ActionDocs(sub=CreateMessageActionSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(publish=CreateMessageActionSerializer()))  # type: ignore
     async def create_message(self, message: str, **kwargs: Any) -> None:
         room: Room = await self.get_room(pk=self.room_subscribe)
         await database_sync_to_async(Message.objects.create)(
             room=room, user=self.scope["user"], text=message
         )
 
-    @generics.action(docs=ActionDocs(sub=SubscribeToMessageInRoomSerializer()))  # type: ignore
+    @generics.action(docs=ActionDocs(publish=SubscribeToMessageInRoomSerializer()))  # type: ignore
     async def subscribe_to_messages_in_room(self, pk: Any, **kwargs: Any) -> None:
         await self.message_activity.subscribe(room=pk)  # type: ignore
 

@@ -1,32 +1,13 @@
 import dataclasses
-from typing import Any, Dict, Literal, Optional
-
-
-@dataclasses.dataclass
-class Info:
-    title: str
-    version: str
-
-
-@dataclasses.dataclass
-class MessageObject:
-    name: str
-    payload: Any
-
-
-@dataclasses.dataclass
-class OperationObject:
-    message: "MessageObject"
-
+from typing import Dict, Literal, Optional, TypedDict
 
 ChannelName = str
 
 
-@dataclasses.dataclass
-class ChannelItemObject:
+class ChannelItemObject(TypedDict):
     description: str
-    subscribe: Optional["OperationObject"]
-    publish: Optional["OperationObject"]
+    subscribe: Optional[dict]
+    publish: Optional[dict]
 
 
 Channels = Dict[ChannelName, ChannelItemObject]
@@ -35,7 +16,7 @@ Channels = Dict[ChannelName, ChannelItemObject]
 @dataclasses.dataclass
 class AsyncAPISchema:
     asyncapi: Literal["2.2.0"]
-    info: "Info"
+    info: dict
     channels: "Channels"
 
 

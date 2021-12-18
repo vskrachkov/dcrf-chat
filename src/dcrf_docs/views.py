@@ -19,7 +19,7 @@ def asyncapi_docs(request: Request) -> HttpResponse:
                 dataclasses.asdict(
                     asyncapi.AsyncAPISchema(
                         asyncapi="2.2.0",
-                        info=asyncapi.Info(
+                        info=dict(
                             title="Hello world application",
                             version="1.1.2",
                         ),

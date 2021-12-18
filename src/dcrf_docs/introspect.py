@@ -1,11 +1,12 @@
 import logging
-from typing import Any, Type, Union
+from typing import Any, Iterable, Type, Union
 
 from asgiref.typing import ASGI2Protocol
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.routing import ProtocolTypeRouter, URLRouter
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.serializers import BaseSerializer
 
 from dcrf_docs import asyncapi
 from dcrf_docs.action_docs import ActionDocs
@@ -31,21 +32,29 @@ def introspect_consumer(consumer: Any) -> asyncapi.Channels:
             if docs:
                 if not isinstance(docs, ActionDocs):
                     log.warning("docs must be an instance of ActionDocs")
-                name = docs.sub.__class__.__name__.replace("Serializer", "")
-                payload = AutoSchema().map_serializer(docs.sub)
-                res[
-                    asyncapi.ChannelName(docs.name or action_name)
-                ] = asyncapi.ChannelItemObject(
-                    description=docs.description,
-                    subscribe=asyncapi.OperationObject(
-                        message=asyncapi.MessageObject(name=name, payload=payload)
-                    ),
-                    publish=None,
-                )
+                res[action_name] = {}
+                res[action_name]["description"] = docs.description
+                res[action_name]["publish"] = to_message([docs.publish])
+                if docs.subscribe:
+                    res[action_name]["subscribe"] = to_message(docs.subscribe)
             else:
                 log.warning(f"no docs for action: {action_name}")
 
     return res
+
+
+def to_message(serializers: Iterable[BaseSerializer]) -> dict:
+    return {
+        "message": {
+            "oneOf": [
+                {
+                    "name": s.__class__.__name__.replace("Serializer", ""),
+                    "payload": AutoSchema().map_serializer(s),
+                }
+                for s in serializers
+            ]
+        }
+    }
 
 
 def get_root_app(app: ASGI2Protocol) -> ASGI2Protocol:

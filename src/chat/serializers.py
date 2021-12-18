@@ -60,3 +60,10 @@ class CreateMessageActionSerializer(serializers.Serializer):
     action = serializers.ChoiceField(choices=["create_message"])
     request_id = serializers.IntegerField()
     message = serializers.CharField()
+
+
+class NotifyUsersSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=["notify_users"])
+    users: serializers.BaseSerializer = serializers.ListSerializer(
+        child=UserSerializer()
+    )
