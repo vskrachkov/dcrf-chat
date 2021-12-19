@@ -24,6 +24,7 @@ drf_info_endpoint = "*"
 djangochannelsrestframework = "*"
 websockets = "*"
 channelsmultiplexer = "*"
+dcrf-asyncapi = "==0.0.2"
 
 [dev-packages]
 mypy = "==0.910"

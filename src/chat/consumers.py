@@ -1,12 +1,11 @@
 from typing import Any, Iterable, Optional
 
 from channels.db import database_sync_to_async
+from dcrf_asyncapi.action_docs import ActionDocs
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer import generics, model_observer
 from djangochannelsrestframework.observer.model_observer import Action
 from djangochannelsrestframework.permissions import IsAuthenticated
-
-from dcrf_docs.action_docs import ActionDocs
 
 from .models import Message, Room, User
 from .serializers import (
@@ -34,24 +33,35 @@ class RoomConsumer(generics.ObserverModelInstanceMixin, GenericAsyncAPIConsumer)
             await self.notify_users()
         await super().disconnect(code)
 
-    @generics.action(docs=ActionDocs(publish=JoinRoomActionSerializer(), subscribe=[NotifyUsersSerializer()]))  # type: ignore
+    @generics.action(  # type: ignore
+        docs=ActionDocs(
+            publish=JoinRoomActionSerializer(),
+            subscribe=[NotifyUsersSerializer()],
+        )
+    )
     async def join_room(self, pk: Any, **kwargs: Any) -> None:
         self.room_subscribe = pk
         await self.add_user_to_room(pk)
         await self.notify_users()
 
-    @generics.action(docs=ActionDocs(publish=LeaveRoomActionSerializer()))  # type: ignore
+    @generics.action(  # type: ignore
+        docs=ActionDocs(publish=LeaveRoomActionSerializer()),
+    )
     async def leave_room(self, pk: Any, **kwargs: Any) -> None:
         await self.remove_user_from_room(pk)
 
-    @generics.action(docs=ActionDocs(publish=CreateMessageActionSerializer()))  # type: ignore
+    @generics.action(  # type: ignore
+        docs=ActionDocs(publish=CreateMessageActionSerializer()),
+    )
     async def create_message(self, message: str, **kwargs: Any) -> None:
         room: Room = await self.get_room(pk=self.room_subscribe)
         await database_sync_to_async(Message.objects.create)(
             room=room, user=self.scope["user"], text=message
         )
 
-    @generics.action(docs=ActionDocs(publish=SubscribeToMessageInRoomSerializer()))  # type: ignore
+    @generics.action(  # type: ignore
+        docs=ActionDocs(publish=SubscribeToMessageInRoomSerializer()),
+    )
     async def subscribe_to_messages_in_room(self, pk: Any, **kwargs: Any) -> None:
         await self.message_activity.subscribe(room=pk)  # type: ignore
 
